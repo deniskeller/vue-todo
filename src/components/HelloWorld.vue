@@ -11,7 +11,6 @@ const count = ref(0);
 
     <div class="card">
         <button
-            class=""
             type="button"
             @click="count++"
         >
