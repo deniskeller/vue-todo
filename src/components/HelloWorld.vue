@@ -7,16 +7,16 @@ const count = ref(0);
 </script>
 
 <template>
-    <h1>{{ is }}</h1>
+  <h1>{{ is }}</h1>
 
-    <div class="card">
-        <button
-            type="button"
-            @click="count++"
-        >
-            count is {{ count }}
-        </button>
-    </div>
+  <div class="card">
+    <button
+      type="button"
+      @click="count++"
+    >
+      count is {{ count }}
+    </button>
+  </div>
 </template>
 
 <style scoped></style>
