@@ -1,13 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, type PropType } from 'vue';
 
-defineProps<{ is: string }>();
+const props = defineProps({
+  is: {
+    type: [String],
+    default: ''
+  },
+  id: {
+    type: [Number, String] as PropType<number | string>,
+    default: 0
+  }
+});
+// console.log('id: ', props.id);
+// console.log('is: ', props.is);
 
 const count = ref(0);
 </script>
 
 <template>
-  <h1>{{ is }}</h1>
+  <h1>{{ props.is }}</h1>
 
   <div class="card">
     <button

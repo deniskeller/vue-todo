@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
+import HelloWorld from '@/components/HelloWorld.vue';
+
 </script>
 
 <template>
-  <hello-world
+  <HelloWorld
     is="header"
-    v-once
-    id="uniqueID"
-    ref="header"
-    my-prop="prop"
+    :id="1"
+  />
+
+  <HelloWorld
+    is="header"
+    :id="1"
   />
 </template>
 

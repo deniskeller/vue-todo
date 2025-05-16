@@ -3,6 +3,8 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import vueParser from 'vue-eslint-parser';
 import pluginVue from 'eslint-plugin-vue';
+// import prettierConfig from 'eslint-config-prettier';
+// import prettier from 'eslint-plugin-prettier';
 
 export default [
   js.configs.recommended,
@@ -10,6 +12,34 @@ export default [
   ...tseslint.configs.recommended,
   // Vue 3 поддержка
   ...pluginVue.configs['flat/recommended'],
+  {
+    ignores: [
+      '**/node_modules/**', // Игнорировать node_modules
+      '**/dist/**', // Игнорировать папку сборки (dist)
+      '**/*.md', // Игнорировать Markdown-файлы
+      '**/*.css', // Игнорировать CSS-файлы
+      '**/coverage/**',
+      '**/public/**',
+      '**/tests/**',
+      '**/*.config.js'
+      // Дополнительные игнорируемые пути (если нужно)
+    ],
+    settings: {
+      'import/resolver': {
+        alias: {
+          map: [
+            ['@', './src'],
+            ['@components', './src/components'],
+            ['@views', './src/views'],
+            ['@assets', './src/assets'],
+            ['@stores', './src/stores'],
+            ['@utils', './src/utils']
+          ],
+          extensions: ['.js', '.jsx', '.vue', '.ts', '.tsx']
+        }
+      }
+    }
+  },
   // Общие настройки для всех файлов
   {
     files: ['**/*.{js,ts,vue}'],
@@ -26,7 +56,24 @@ export default [
         extraFileExtensions: ['.vue']
       }
     },
+    plugins: {
+      // prettier
+    },
     rules: {
+      // 'vue/no-v-html': 'error', // Более строго, чем ваш текущий 'warn'
+      // 'vue/no-mutating-props': 'error',
+      // 'prettier/prettier': 'error',
+      // 'no-undef': 'off',
+      // 'prefer-const': 'error',
+      // 'no-var': 'error',
+      // 'object-shorthand': 'error',
+      // Удаление лишних пробелов
+      'no-multi-spaces': ['error', { ignoreEOLComments: false }],
+      'no-trailing-spaces': 'error',
+
+      // Пустые строки
+      'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0 }],
+      'vue/no-undef-components': 'error', // Ошибка, если компонент не зарегистрирован
       // Проверка порядка атрибутов
       'vue/attributes-order': [
         'error',
@@ -87,7 +134,7 @@ export default [
       // Проверка регистра для стиля именования компонентов в шаблоне
       'vue/component-name-in-template-casing': [
         'error',
-        'kebab-case',
+        'PascalCase',
         {
           registeredComponentsOnly: true
         }
@@ -111,7 +158,7 @@ export default [
         'error',
         {
           extensions: ['vue'],
-          shouldMatchCase: false
+          shouldMatchCase: true
         }
       ],
       // Запретить дублирование имен полей
@@ -163,20 +210,27 @@ export default [
         }
       ],
       // Проверка  запятых
-      'comma-dangle': [
+      // 'comma-dangle': [
+      //   'error',
+      //   {
+      //     arrays: 'never',
+      //     objects: 'never',
+      //     imports: 'never',
+      //     exports: 'never',
+      //     functions: 'never',
+      //   },
+      // ],
+      // 'linebreak-style': ['error', 'unix'], // стиль разрыва строки linebreak-style: ["error", "unix || windows"]
+      'vue/multi-word-component-names': [
         'error',
         {
-          arrays: 'never',
-          objects: 'never',
-          imports: 'never',
-          exports: 'never',
-          functions: 'never'
+          ignores: ['index'] // игнорировать компоненты с именем index
         }
       ],
-
-      // 'linebreak-style': ['error', 'unix'], // стиль разрыва строки linebreak-style: ["error", "unix || windows"]
-      'no-console': 'error', // без console.log
-      'no-debugger': 'error', // без debugger
+      'no-console': 'warn', // без console.log
+      'no-debugger': 'warn', // без debugger
+      // 'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // без console.log
+      // 'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // без debugger
       'arrow-parens': ['error', 'as-needed'], // скобки в стрелочной функции
       'no-plusplus': 'off', //запрещает унарные операторы ++и --
       'constructor-super': 'off', // конструкторы производных классов должны вызывать super(). Конструкторы не производных классов не должны вызывать super().
@@ -223,7 +277,21 @@ export default [
         'error',
         'always',
         { exceptAfterSingleLine: true }
-      ] // требует или запрещает пустую строку между членами класса.
+      ], // требует или запрещает пустую строку между членами класса.
+      'vue/no-unused-components': 'error', // Правило для подсветки неиспользуемых компонентов
+      'vue/require-component-is': 'error',
+      'vue/no-v-html': 'warn', // Для безопасности рекомендуется ограничить использование v-html
+      'vue/require-default-prop': 'off',
+      'vue/no-mutating-props': 'error',
+      // 'vue/component-tags-order': ['error', {
+      //   order: ['script', 'template', 'style']
+      // }],
+      'vue/padding-line-between-blocks': ['error', 'always'],
+      // Для Vue файлов
+      'vue/html-closing-bracket-newline': ['error', {
+        singleline: 'never',
+        multiline: 'always'
+      }],
     }
   },
 
@@ -231,7 +299,24 @@ export default [
   {
     files: ['**/*.ts'],
     rules: {
-      'no-undef': 'off' // TS сам следит за undefined
+      'no-undef': 'off', // TS сам следит за undefined
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      "@typescript-eslint/ban-ts-comment": "off"
     }
-  }
+  },
+  // {
+  //   files: ['**/*.vue'],
+  //   rules: {
+  //     // 'no-undef': 'off',
+  //     'vue/no-ref-as-operand': 'error',
+  //     'vue/no-setup-props-destructure': 'error',
+  //     'vue/script-setup-uses-vars': 'error',
+  //     'vue/padding-line-between-blocks': ['error', 'always']
+  //   }
+  // }
+  // prettier
 ];
