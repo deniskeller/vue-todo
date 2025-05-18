@@ -11,7 +11,9 @@ export default [
   // TypeScript поддержка
   ...tseslint.configs.recommended,
   // Vue 3 поддержка
-  ...pluginVue.configs['flat/recommended'],
+  ...pluginVue.configs[
+    'flat/recommended'
+  ],
   {
     ignores: [
       '**/node_modules/**', // Игнорировать node_modules
@@ -30,6 +32,7 @@ export default [
           map: [
             ['@', './src'],
             ['@components', './src/components'],
+            ['@base', './src/components/base'],
             ['@views', './src/views'],
             ['@assets', './src/assets'],
             ['@stores', './src/stores'],
@@ -264,7 +267,7 @@ export default [
         }
       ],
       'no-bitwise': ['error', { allow: ['~'] }], // запрещает побитовые операторы.
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }], // запрещает неиспользуемые переменные.
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // запрещает неиспользуемые переменные.
       // 'max-len': ['error', { code: 120 }], // обеспечивает максимальную длину строки.
       'object-curly-newline': [
         'error',
@@ -292,6 +295,7 @@ export default [
         singleline: 'never',
         multiline: 'always'
       }],
+      "semi": ["error", "always"]
     }
   },
 
@@ -301,7 +305,7 @@ export default [
     rules: {
       'no-undef': 'off', // TS сам следит за undefined
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',

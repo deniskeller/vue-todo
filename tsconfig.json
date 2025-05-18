@@ -8,6 +8,13 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "types": ["vite/client"],
+    "rootDir": "src",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "noEmit": true,
+    "composite": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -16,16 +23,9 @@
       "@assets/*": ["src/assets/*"],
       "@stores/*": ["src/stores/*"],
       "@utils/*": ["src/utils/*"]
-    },
-    "types": ["vite/client"],
-    "rootDir": "src",
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "noEmit": true,
-    "composite": true
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "./tsconfig.app.json" },
