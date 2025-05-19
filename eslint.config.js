@@ -224,7 +224,7 @@ export default [
       //   },
       // ],
       // 'linebreak-style': ['error', 'unix'], // стиль разрыва строки linebreak-style: ["error", "unix || windows"]
-      'vue/multi-word-component-names': [
+      'vue/multi-word-component-names': [ // запрет на однословное именование компонентов
         'error',
         {
           ignores: ['index'] // игнорировать компоненты с именем index
@@ -295,7 +295,8 @@ export default [
         singleline: 'never',
         multiline: 'always'
       }],
-      "semi": ["error", "always"]
+      "semi": ["error", "always"], // расставляет точку с запятой
+      'vue/script-indent': ['error', 2, { baseIndent: 1 }], // форматирует код в теге script
     }
   },
 
