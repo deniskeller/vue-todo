@@ -48,6 +48,12 @@
     isActive.value = false;
   };
 
+  // РЕДАКТИРОВАНИЕ ЗАДАЧИ
+  const handleEdit = () => {
+    emit('editTodo', props.todo.id);
+    isActive.value = false;
+  };
+
 </script>
 
 <template>
@@ -95,7 +101,7 @@
 
       <div
         className="bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]"
-        @click="emit('editTodo', todo.id)"
+        @click="handleEdit"
       >
         Редактировать
       </div>
