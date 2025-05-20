@@ -55,16 +55,19 @@
 
   // СМЕНА СТАТУСА ЗАДАЧИ
   const handleToggleTodo = (todo: Todo) => {
+    // eslint-disable-next-line no-console
     console.log('handleToggleTodo todo: ', todo);
   };
 
   // УДАЛЕНИЕ ЗАДАЧИ
   const handleDeleteTodo = (id: string) => {
+    // eslint-disable-next-line no-console
     console.log('handleDeleteTodo id: ', id);
   };
 
   // РЕДАКТИРОВАНИЕ ЗАДАЧИ
   const handleEditTodo = (id: string) => {
+    // eslint-disable-next-line no-console
     console.log('handleEditTodo id: ', id);
   };
 
