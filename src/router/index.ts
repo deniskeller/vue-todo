@@ -1,17 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import TodoList from '@/views/TodoList.vue';
 
-const routes = [
-  {
+const routes = [{
     path: '/',
-    name: 'TodoList',
+    name: 'main',
+    redirect: '/page/1'
+  },
+  {
+    path: '/page/:pageNumber',
+    name: 'TaskList',
     component: TodoList
   },
   // {
-  //   path: '/about',
-  //   name: 'About',
-  //   component: About
-  // }
+  //   path: '/edit/:key',
+  //   name: 'TaskEdit',
+  //   component: () => import('../views/TaskEdit.vue')
+  // },
 ];
 
 const router = createRouter({

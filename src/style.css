@@ -1,5 +1,16 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import 'tailwindcss';
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* TAILWINDCSS */
+@theme {
+  --animate-spinner: spinner 700ms infinite linear;
+  @keyframes spinner {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 }

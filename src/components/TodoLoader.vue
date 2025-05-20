@@ -2,26 +2,10 @@
 </script>
 
 <template>
-  <div class="spinner" />
+  <div
+    className="mx-auto w-[50px] h-[50px] border-[3px] rounded-full border-l-transparent border-t-[#aaa] border-r-[#555] border-b-[#000] mb-[20px] animate-spinner"
+  />
 </template>
 
-<style  scoped>
-.spinner {
-  margin: 0 auto;
-  width: 50px;
-  height: 50px;
-  border: 3px solid;
-  border-radius: 50%;
-  border-left-color: transparent;
-  border-top-color: #aaa;
-  border-right-color: #555;
-  border-bottom-color: #000;
-  animation: spin 700ms infinite linear;
-  margin-bottom: 20px;
-}
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
+<style scoped>
 </style>

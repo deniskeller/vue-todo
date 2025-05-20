@@ -3,9 +3,10 @@ import vue from '@vitejs/plugin-vue';
 // @ts-ignore
 import eslint from 'vite-plugin-eslint';
 import path from 'path';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [vue(), eslint()],
+  plugins: [vue(), eslint(), tailwindcss()],
   resolve: {
     alias: [
       { find: '@', replacement: path.resolve(__dirname, './src') },

@@ -1,13 +1,20 @@
 <script setup lang="ts">
+  import TodoItem from '@/components/TodoItem.vue';
   import TodoLoader from '@/components/TodoLoader.vue';
-  import { computed, ref } from 'vue';
+  import { computed, onMounted, ref } from 'vue';
   import { RouterLink, useRoute } from 'vue-router';
 
+  interface Todo {
+    id: number;
+    title: string;
+    completed: boolean;
+  }
+
   const route = useRoute();
+  const todos = ref<Todo[]>([]);
   const text = ref<string>("");
   const error = ref<boolean>(false);
   const loading = ref<boolean>(true);
-  // const date = ref<string>("");
 
   function addTask () {
     if (text.value !== "") {
@@ -24,14 +31,17 @@
   }
 
   function sortTask () {
-    // this.$store.state.tasks.reverse();
+    todos.value.reverse();
   }
 
-  const tasks = computed(() => {
-    // const pageNumber = +this.$route.params.pageNumber;
-    // const tasks = this.$store.getters.tasks(pageNumber - 1);
-    // return tasks;
-    return [];
+  // const computedTodos = computed(() => {
+  //   const pageNumber = +this.$route.params.pageNumber;
+  //   const tasks = this.$store.getters.tasks(pageNumber - 1);
+  //   return tasks;
+  // });
+
+  onMounted(()=> {
+    console.log('route.params: ', route.params);
   });
 
   const pageNumber = computed(()=> {
@@ -64,7 +74,7 @@
 </script>
 
 <template>
-  <div class="task-content">
+  <div class="max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]">
     <div class="task-header">
       <div class="task-header__title">
         Задачи
@@ -124,16 +134,15 @@
     <TodoLoader v-if="loading" />
 
     <div
-      v-if="tasks.length"
+      v-if="todos.length"
       class="task-list"
     >
-      <!-- <TaskItem
-        v-for="(task, index) in tasks"
-        :key="task.key"
-        :text="task.text"
+      <TodoItem
+        v-for="(todo, index) in todos"
+        :key="todo.id"
         :index="index"
-        :task="task"
-      /> -->
+        :todo="todo"
+      />
     </div>
 
     <div
