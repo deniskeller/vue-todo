@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --open",
-    "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .js,.ts,.vue",
     "lint:fix": "eslint . --ext .js,.ts,.vue --fix",
-    "format": "prettier --write --loglevel warn ."
+    "format": "prettier --write --loglevel warn .",
+    "prebuild": "rimraf dist",
+    "build": "vue-tsc --noEmit && vite build"
   },
   "dependencies": {
     "pinia": "^3.0.2",
@@ -31,6 +32,7 @@
     "eslint-plugin-vue": "^10.1.0",
     "globals": "^16.1.0",
     "prettier": "3.5.3",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^4.1.7",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.32.0",

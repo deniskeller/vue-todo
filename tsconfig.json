@@ -23,16 +23,13 @@
       "@assets/*": ["src/assets/*"],
       "@store/*": ["src/store/*"],
       "@utils/*": ["src/utils/*"]
-    }
+    },
+    "outDir": "./dist",
+    "declarationDir": "./dist/types",
+    "declaration": false,
+    "declarationMap": false
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/store/todos.ts",
-    "src/router/index.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "./tsconfig.app.json" },
