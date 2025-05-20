@@ -3,17 +3,14 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import vueParser from 'vue-eslint-parser';
 import pluginVue from 'eslint-plugin-vue';
-// import prettierConfig from 'eslint-config-prettier';
-// import prettier from 'eslint-plugin-prettier';
+import tsESLint from '@typescript-eslint/eslint-plugin';
 
 export default [
   js.configs.recommended,
   // TypeScript поддержка
   ...tseslint.configs.recommended,
   // Vue 3 поддержка
-  ...pluginVue.configs[
-    'flat/recommended'
-  ],
+  ...pluginVue.configs['flat/recommended'],
   {
     ignores: [
       '**/node_modules/**', // Игнорировать node_modules
@@ -35,7 +32,7 @@ export default [
             ['@base', './src/components/base'],
             ['@views', './src/views'],
             ['@assets', './src/assets'],
-            ['@stores', './src/stores'],
+            ['@store', './src/store'],
             ['@utils', './src/utils']
           ],
           extensions: ['.js', '.jsx', '.vue', '.ts', '.tsx']
@@ -60,20 +57,12 @@ export default [
       }
     },
     plugins: {
-      // prettier
+      '@typescript-eslint': tsESLint
     },
     rules: {
-      // 'vue/no-v-html': 'error', // Более строго, чем ваш текущий 'warn'
-      // 'vue/no-mutating-props': 'error',
-      // 'prettier/prettier': 'error',
-      // 'no-undef': 'off',
-      // 'prefer-const': 'error',
-      // 'no-var': 'error',
-      // 'object-shorthand': 'error',
       // Удаление лишних пробелов
       'no-multi-spaces': ['error', { ignoreEOLComments: false }],
       'no-trailing-spaces': 'error',
-
       // Пустые строки
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0 }],
       'vue/no-undef-components': 'error', // Ошибка, если компонент не зарегистрирован
@@ -94,7 +83,7 @@ export default [
             'EVENTS',
             'CONTENT'
           ],
-          alphabetical: false
+          alphabetical: true
         }
       ],
       // Проверка на максимальное количество атрибутов в строке
@@ -212,19 +201,8 @@ export default [
           ]
         }
       ],
-      // Проверка  запятых
-      // 'comma-dangle': [
-      //   'error',
-      //   {
-      //     arrays: 'never',
-      //     objects: 'never',
-      //     imports: 'never',
-      //     exports: 'never',
-      //     functions: 'never',
-      //   },
-      // ],
-      // 'linebreak-style': ['error', 'unix'], // стиль разрыва строки linebreak-style: ["error", "unix || windows"]
-      'vue/multi-word-component-names': [ // запрет на однословное именование компонентов
+      'vue/multi-word-component-names': [
+        // запрет на однословное именование компонентов
         'error',
         {
           ignores: ['index'] // игнорировать компоненты с именем index
@@ -267,7 +245,6 @@ export default [
         }
       ],
       'no-bitwise': ['error', { allow: ['~'] }], // запрещает побитовые операторы.
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // запрещает неиспользуемые переменные.
       // 'max-len': ['error', { code: 120 }], // обеспечивает максимальную длину строки.
       'object-curly-newline': [
         'error',
@@ -286,42 +263,19 @@ export default [
       'vue/no-v-html': 'warn', // Для безопасности рекомендуется ограничить использование v-html
       'vue/require-default-prop': 'off',
       'vue/no-mutating-props': 'error',
-      // 'vue/component-tags-order': ['error', {
-      //   order: ['script', 'template', 'style']
-      // }],
       'vue/padding-line-between-blocks': ['error', 'always'],
-      // Для Vue файлов
-      'vue/html-closing-bracket-newline': ['error', {
-        singleline: 'never',
-        multiline: 'always'
-      }],
-      "semi": ["error", "always"], // расставляет точку с запятой
+      'vue/html-closing-bracket-newline': [
+        'error',
+        {
+          singleline: 'never',
+          multiline: 'always'
+        }
+      ],
+      semi: ['error', 'always'], // расставляет точку с запятой
       'vue/script-indent': ['error', 2, { baseIndent: 1 }], // форматирует код в теге script
+      // 'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // запрещает неиспользуемые переменные.
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn'
     }
-  },
-
-  // Дополнительные правила для TS-файлов
-  {
-    files: ['**/*.ts'],
-    rules: {
-      'no-undef': 'off', // TS сам следит за undefined
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/explicit-function-return-type': 'error',
-      '@typescript-eslint/no-non-null-assertion': 'error',
-      '@typescript-eslint/consistent-type-imports': 'error',
-      "@typescript-eslint/ban-ts-comment": "off"
-    }
-  },
-  // {
-  //   files: ['**/*.vue'],
-  //   rules: {
-  //     // 'no-undef': 'off',
-  //     'vue/no-ref-as-operand': 'error',
-  //     'vue/no-setup-props-destructure': 'error',
-  //     'vue/script-setup-uses-vars': 'error',
-  //     'vue/padding-line-between-blocks': ['error', 'always']
-  //   }
-  // }
-  // prettier
+  }
 ];

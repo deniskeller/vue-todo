@@ -13,7 +13,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "src/**/*.json",
-    "src/router/index.ts"
+    "src/router/index.ts",
+    "src/store/todos.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

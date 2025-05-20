@@ -1,147 +1,173 @@
 <script setup lang="ts">
   import TodoItem from '@/components/TodoItem.vue';
   import TodoLoader from '@/components/TodoLoader.vue';
-  import { computed, onMounted, ref } from 'vue';
-  import { RouterLink, useRoute } from 'vue-router';
+  import { computed, ref } from 'vue';
+  import { useTodoStore } from '@/store/todos';
+  import { Todo } from '@/store/types';
 
-  interface Todo {
-    id: number;
-    title: string;
-    completed: boolean;
-  }
+  // interface Todo {
+  //   id: number;
+  //   title: string;
+  //   completed: boolean;
+  // }
 
-  const route = useRoute();
-  const todos = ref<Todo[]>([]);
-  const text = ref<string>("");
+  const todoStore = useTodoStore();
+  // console.log('todos: ', todoStore.todos);
+
+  // type FilterStatus = 'all' | 'completed' | 'active';
+  // type ItemsPerPage = 5 | 10 | 20;
+
+  // const route = useRoute();
+  // const todos = ref<Todo[]>([]);
+  // const inputError = ref<boolean>(false);
+  const loading = ref<boolean>(false);
   const error = ref<boolean>(false);
-  const loading = ref<boolean>(true);
+  const title = ref<string>("");
+  // const sortType = ref<FilterStatus>('all');
 
-  function addTask () {
-    if (text.value !== "") {
-      // this.$store.dispatch("addTask", this.text);
-      text.value = "";
-      // if (this.page !== 1) this.$router.push("/page/1");
-    } else {
-      error.value = true;
-    }
-  }
+  // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
+  const computedSubmitDisabled = computed(() => !title.value);
+  const handleSubmit = async (e: Event) => {
+    e.preventDefault();
+    if (title.value !== '') {
+      try {
+        // const order =
+        //   todos.value.length > 0 ? Math.max(...todos.value.map(t => t.order)) + 1 : 1;
 
-  function clearTitle () {
-    text.value = "";
-  }
+        // await dispatch(
+        //   createTodo({
+        //     title,
+        //     completed: false,
+        //     // order: Date.now(),
+        //     order: order,
+        //     createdAt: new Date().toISOString()
+        //   })
+        // );
+        // setTitle('');
+        // const pageCount = Math.ceil((todos.value.length + 1) / itemsPerPage);
+        // if (pageCount > 1) navigate(`/page/${pageCount}`);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        // console.log('error111: ', error);
+      }
+    } else { /* empty */ }
+  };
 
-  function sortTask () {
-    todos.value.reverse();
-  }
+  // СМЕНА СТАТУСА ЗАДАЧИ
+  const handleToggleTodo = (todo: Todo) => {
+    console.log('handleToggleTodo todo: ', todo);
+  };
 
-  // const computedTodos = computed(() => {
-  //   const pageNumber = +this.$route.params.pageNumber;
-  //   const tasks = this.$store.getters.tasks(pageNumber - 1);
-  //   return tasks;
+  // УДАЛЕНИЕ ЗАДАЧИ
+  const handleDeleteTodo = (id: string) => {
+    console.log('handleDeleteTodo id: ', id);
+  };
+
+  // РЕДАКТИРОВАНИЕ ЗАДАЧИ
+  const handleEditTodo = (id: string) => {
+    console.log('handleEditTodo id: ', id);
+  };
+
+  // const pageNumber = computed(()=> {
+  //   const page = Number(route.params.pageNumber);
+  //   return page;
   // });
-
-  onMounted(()=> {
-    console.log('route.params: ', route.params);
-  });
-
-  const pageNumber = computed(()=> {
-    const page = Number(route.params.pageNumber);
-    return page;
-  });
-
-  const showPagination = computed(()=> {
-    // let taskLength = this.$store.state.tasks.length;
-    // if (taskLength > 10) {
-    //   return true;
-    // }
-    return false;
-  });
-
-  const prevDisable = computed(() => {
-    // if (this.pageNumber <= 1) {
-    //   return true;
-    // }
-    return false;
-  });
-
-  const nextDisable = computed(() => {
-    // let taskLength = this.$store.state.tasks.length;
-    // if (taskLength <= this.pageNumber * 10) {
-    //   return true;
-    // }
-    return false;
-  });
 </script>
 
 <template>
   <div class="max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]">
-    <div class="task-header">
-      <div class="task-header__title">
-        Задачи
-      </div>
-      <div class="task-header__options">
-        <span>&bull;&bull;&bull;</span>
-      </div>
-    </div>
+    <h1 class="text-[20px] leading-[24px] font-semibold mb-[15px]">
+      Задачи
+    </h1>
 
-    <div class="task-form">
+    <form
+      class="mb-[20px]"
+      @submit.prevent="handleSubmit"
+    >
       <div
-        class="task-form__text-overflow"
-        :class="{'error': error}"
+        class="overflow-hidden p-[6px_8px_2px] relative z-10 bg-white mb-[15px] rounded-[5px]"
       >
         <textarea
-          v-model.trim="text"
-          type="text"
-          placeholder="Enter a title for this card..."
-          class="task-form__text"
-          @keyup.enter="addTask"
+          v-model="title"
+          className="block text-base leading-5	text-[#172b4d]	bg-white	w-full	h-auto max-h-[162px] min-h-[70px]	overflow-y-auto	p-0	border-none	shadow-none	overflow-hidden break-words	resize-none outline-none"
+          placeholder="Введите текст задачи..."
         />
       </div>
 
-      <div class="task-form__actions">
+      <div className="flex flex-row items-center relative">
         <button
-          class="task-form__add"
-          @click="addTask"
+          className="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
+          :disabled="computedSubmitDisabled"
+          title="Добавить новую задачу"
+          type="submit"
         >
-          Add card
+          Добавить
         </button>
 
-        <div
-          class="task-form__delete"
-          @click="clearTitle"
+        <button
+          className="group leading-8 w-[25px]	h-[25px] mr-auto relative cursor-pointer"
+          title="Очистить текст задачи"
+          type="button"
+          @click="title=''"
         >
-          <span />
-        </div>
+          <span
+            className="block w-full h-[3px] bg-[#6b778c] absolute top-[calc(50%-1px)] rotate-45 before:content-[''] before:block before:w-full before:h-[3px] before:bg-[#6b778c]
+    before:absolute before:rotate-90 group-hover:bg-black group-hover:before:bg-black transition-all duration-[500ms] ease-in-out before:transition-all before:duration-[500ms]"
+          />
+        </button>
 
-        <div
-          class="task-form__options"
-          @click="sortTask"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
-            <path d="M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z" />
-            <path
-              d="M0 0h24v24H0z"
-              fill="none"
-            />
-          </svg>
-        </div>
+        <!-- <BaseSelect
+          class-name="ml-[10px]"
+          initial-value="{sortByItem}"
+          options="{sortByList}"
+          on-change="{handleSortBy}"
+        />
+
+        <BaseSelect
+          class-name="ml-[10px]"
+          initial-value="{itemsPerPageList[0]}"
+          options="{itemsPerPageList}"
+          on-change="{handleItemsPerPage}"
+        /> -->
       </div>
+    </form>
+
+    <div className="flex justify-between mb-5">
+      <button
+        className="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
+        title="Удаление завершенных задач"
+        type="button"
+      >
+        Удалить завершенные задачи
+      </button>
+
+      <button
+        className="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
+        title="Удаление все задач"
+        type="button"
+      >
+        Удалить все задачи
+      </button>
     </div>
 
     <TodoLoader v-if="loading" />
 
+    <div v-if="error">
+      {{ error }}
+    </div>
+
     <div
-      v-if="todos.length"
+      v-if="todoStore.todos.length"
       class="task-list"
     >
       <TodoItem
-        v-for="(todo, index) in todos"
+        v-for="(todo, index) in todoStore.todos"
         :key="todo.id"
         :index="index"
         :todo="todo"
+        @delete-todo="handleDeleteTodo"
+        @edit-todo="handleEditTodo"
+        @toggle-todo="handleToggleTodo"
       />
     </div>
 
@@ -152,7 +178,7 @@
       У вас пока нет задач
     </div>
 
-    <div
+    <!-- <div
       v-if="showPagination"
       class="task-control"
     >
@@ -193,7 +219,7 @@
           />
         </svg>
       </RouterLink>
-    </div>
+    </div> -->
   </div>
 </template>
 
