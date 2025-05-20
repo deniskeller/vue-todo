@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import TodoItem from '@/components/TodoItem.vue';
-  import TodoLoader from '@/components/TodoLoader.vue';
   import { computed, ref } from 'vue';
   import { useTodoStore } from '@/store/todos';
   import { Todo } from '@/store/types';
+  import TodoLoader from '@/components/TodoLoader.vue';
 
   // interface Todo {
   //   id: number;

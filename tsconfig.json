@@ -23,11 +23,7 @@
       "@assets/*": ["src/assets/*"],
       "@store/*": ["src/store/*"],
       "@utils/*": ["src/utils/*"]
-    },
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationDir": "./dist/types",
-    "declarationMap": false
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"],
