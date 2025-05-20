@@ -25,8 +25,8 @@
       "@utils/*": ["src/utils/*"]
     },
     "outDir": "./dist",
+    "declaration": true,
     "declarationDir": "./dist/types",
-    "declaration": false,
     "declarationMap": false
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
