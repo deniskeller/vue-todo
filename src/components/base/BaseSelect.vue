@@ -10,7 +10,7 @@
   }>();
 
   const emit = defineEmits<{
-    (e: 'onChange', value: SelectItem): void;
+    (e: 'change', value: SelectItem): void;
   }>();
 
   const isOpen = ref(false);
@@ -28,7 +28,7 @@
   const onOptionClicked = (value: SelectItem) => {
     selectedOption.value = value;
     isOpen.value = false;
-    emit("onChange", value);
+    emit("change", value);
   };
 </script>
 
