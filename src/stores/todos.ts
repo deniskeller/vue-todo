@@ -48,11 +48,11 @@ export const useTodoStore = defineStore('todos', () => {
   };
 
   // Getters
-  const paginatedTodos = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value;
-    const end = start + itemsPerPage.value;
-    return todos.value.slice(start, end);
-  });
+  // const paginatedTodos = computed(() => {
+  //   const start = (currentPage.value - 1) * itemsPerPage.value;
+  //   const end = start + itemsPerPage.value;
+  //   return todos.value.slice(start, end);
+  // });
 
   const totalPages = computed(() => {
     return Math.ceil(todos.value.length / itemsPerPage.value);
@@ -310,7 +310,7 @@ export const useTodoStore = defineStore('todos', () => {
     currentPage,
     itemsPerPage,
     draggedTodo,
-    paginatedTodos,
+    // paginatedTodos,
     totalPages,
     loadTodos,
     createTodo,

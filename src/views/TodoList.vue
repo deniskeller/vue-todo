@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref, watch } from 'vue';
+  import { computed, ref, watch } from 'vue';
   import { useTodoStore } from '@/stores/todos';
   import { Todo } from '@/stores/types';
   import { useRoute, useRouter } from 'vue-router';
@@ -18,11 +18,6 @@
   const todoStore = useTodoStore();
   const { todos, status, error, currentPage, itemsPerPage, totalPages } = storeToRefs(todoStore);
   const sortType = ref<FilterStatus>('all');
-  // const { pageNumber = '1' } = useParams();
-
-  onMounted(()=>{
-    // todoStore.setCurrentPage(+pageNumber);
-  });
 
   // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
   const title = ref<string>("");
@@ -41,7 +36,6 @@
           createdAt: new Date().toISOString()
         });
         title.value = '';
-        // const pageCount = Math.ceil((todos.value.length + 1) / itemsPerPage.value);
         if (totalPages.value > 1) router.push(`/page/${totalPages.value}`);
       } catch (error) {
         console.log('error111: ', error);
@@ -112,13 +106,6 @@
     todoStore.setCurrentPage(page);
     router.push(`/page/${page}`);
   };
-  // расчет задач для постраничного вывода
-  const paginatedTodos = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value;
-    const end = start + itemsPerPage.value;
-    return filteredTodos.value.slice(start, end);
-  });
-
   const filteredTodos = computed(() => {
     return todos.value.filter(todo => {
       if (sortType.value === 'active') return !todo.completed;
@@ -126,6 +113,42 @@
       return true;
     });
   });
+
+  // расчет задач для постраничного вывода
+  const paginatedTodos = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    const end = currentPage.value * itemsPerPage.value;
+    return filteredTodos.value.slice(start, end);
+  });
+
+  watch(
+    () => route.params.pageNumber,
+    newPage => {
+      if (newPage) {
+        todoStore.setCurrentPage(Number(newPage));
+      }
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => filteredTodos.value.length,
+    () => {
+      if (!filteredTodos.value.length) return;
+      const pageNum = Number(route.params.pageNumber);
+      if (pageNum <= 0) router.push('/page/1');
+      if (pageNum > totalPages.value) router.push('/page/' + totalPages.value);
+    }
+  );
+
+  watch(
+    () => route.params.pageNumber,
+    () => {
+      console.log('route.params.pageNumber: ', route.params.pageNumber);
+    },
+    { immediate: true }
+  );
+
 </script>
 
 <template>
@@ -222,7 +245,7 @@
         <TodoItem
           v-for="(todo, index) in paginatedTodos"
           :key="todo.id"
-          :index="index"
+          :index="(currentPage - 1) * itemsPerPage + index"
           :todo="todo"
           @delete-todo="handleDeleteTodo"
           @edit-todo="handleEditTodo"
