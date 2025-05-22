@@ -1,80 +1,130 @@
 <script setup lang="ts">
-  import TodoItem from '@/components/TodoItem.vue';
-  import { computed, ref } from 'vue';
-  import { useTodoStore } from '@/store/todos';
-  import { Todo } from '@/store/types';
-  import TodoLoader from '@/components/TodoLoader.vue';
+  import { computed, onMounted, ref, watch } from 'vue';
+  import { useTodoStore } from '@/stores/todos';
+  import { Todo } from '@/stores/types';
+  import { useRoute, useRouter } from 'vue-router';
+  import { storeToRefs } from 'pinia';
+  import TodoLoader from '@/components/content/TodoLoader.vue';
+  import TodoItem from '@/components/content/TodoItem.vue';
+  import BaseSelect from '@/components/base/BaseSelect.vue';
+  import type { SelectItem } from '@/types';
 
-  // interface Todo {
-  //   id: number;
-  //   title: string;
-  //   completed: boolean;
-  // }
+  type FilterStatus = 'all' | 'completed' | 'active';
+  type ItemsPerPage = 5 | 10 | 20;
 
+  const router = useRouter();
+  const route = useRoute();
   const todoStore = useTodoStore();
-  // console.log('todos: ', todoStore.todos);
+  const { todos, status, error, currentPage, itemsPerPage, totalPages } = storeToRefs(todoStore);
+  const sortType = ref<FilterStatus>('all');
+  // const { pageNumber = '1' } = useParams();
 
-  // type FilterStatus = 'all' | 'completed' | 'active';
-  // type ItemsPerPage = 5 | 10 | 20;
-
-  // const route = useRoute();
-  // const todos = ref<Todo[]>([]);
-  // const inputError = ref<boolean>(false);
-  const loading = ref<boolean>(false);
-  const error = ref<boolean>(false);
-  const title = ref<string>("");
-  // const sortType = ref<FilterStatus>('all');
+  onMounted(()=>{
+    // todoStore.setCurrentPage(+pageNumber);
+  });
 
   // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
+  const title = ref<string>("");
   const computedSubmitDisabled = computed(() => !title.value);
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
     if (title.value !== '') {
       try {
-        // const order =
-        //   todos.value.length > 0 ? Math.max(...todos.value.map(t => t.order)) + 1 : 1;
+        const order =
+          todos.value.length > 0 ? Math.max(...todos.value.map(t => t.order)) + 1 : 1;
 
-        // await dispatch(
-        //   createTodo({
-        //     title,
-        //     completed: false,
-        //     // order: Date.now(),
-        //     order: order,
-        //     createdAt: new Date().toISOString()
-        //   })
-        // );
-        // setTitle('');
-        // const pageCount = Math.ceil((todos.value.length + 1) / itemsPerPage);
-        // if (pageCount > 1) navigate(`/page/${pageCount}`);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        await todoStore.createTodo({
+          title: title.value,
+          completed: false,
+          order: order,
+          createdAt: new Date().toISOString()
+        });
+        title.value = '';
+        const pageCount = Math.ceil((todos.value.length + 1) / itemsPerPage.value);
+        if (pageCount > 1) router.push(`/page/${pageCount}`);
       } catch (error) {
-        // console.log('error111: ', error);
+        console.log('error111: ', error);
       }
     } else { /* empty */ }
   };
 
   // СМЕНА СТАТУСА ЗАДАЧИ
   const handleToggleTodo = (todo: Todo) => {
-    // eslint-disable-next-line no-console
-    console.log('handleToggleTodo todo: ', todo);
-  };
-
-  // УДАЛЕНИЕ ЗАДАЧИ
-  const handleDeleteTodo = (id: string) => {
-    // eslint-disable-next-line no-console
-    console.log('handleDeleteTodo id: ', id);
+    todoStore.updateTodo({ ...todo, completed: !todo.completed });
   };
 
   // РЕДАКТИРОВАНИЕ ЗАДАЧИ
   const handleEditTodo = (id: string) => {
-    // eslint-disable-next-line no-console
-    console.log('handleEditTodo id: ', id);
+    router.push('/TodoEdit/' + id);
   };
 
-  // const pageNumber = computed(()=> {
-  //   const page = Number(route.params.pageNumber);
-  //   return page;
-  // });
+  // УДАЛЕНИЕ ЗАДАЧИ
+  const handleDeleteTodo = (id: string) => {
+    todoStore.deleteTodo(id);
+  };
+
+  // УДАЛЕНИЕ ЗАВЕРШЕННЫХ ЗАДАЧ
+  const completedTodosCount = computed(() => {
+    return todos.value.filter(todo => todo.completed).length;
+  });
+  const handleDeleteCompletedTodos = async () => {
+    if (
+      window.confirm('Вы уверены, что хотите удалить все выполненные задачи?')
+    ) {
+      await todoStore.deleteCompletedTodos();
+    }
+  };
+
+  // УДАЛЕНИЕ ВСЕХ ЗАДАЧ
+  const handleDeleteAllTodos = async () => {
+    if (window.confirm('Вы уверены, что хотите удалить все задачи?')) {
+      await todoStore.deleteAllTodos();
+      router.push('/page/1');
+    }
+  };
+
+  // СОРТИРОВКА СПИСКА ЗАДАЧ ПО СТАТУСУ
+  const sortByList = [
+    { label: 'Все', value: 'all' },
+    { label: 'Завершенные', value: 'completed' },
+    { label: 'Активные', value: 'active' }
+  ];
+  const sortByItem = ref<SelectItem>(sortByList[0]);
+  const handleSortBy = (value: SelectItem) => {
+    sortByItem.value = value;
+    sortType.value = value.value as FilterStatus;
+    router.push('/page/1');
+  };
+
+  // ---------- ОТРИСОВКА КОЛ-ВА ЗАДАЧ
+  const itemsPerPageList = [
+    { label: '5', value: 5 },
+    { label: '10', value: 10 },
+    { label: '20', value: 20 }
+  ];
+  const handleItemsPerPage = (value: SelectItem) => {
+    todoStore.setItemsPerPage(value.value as ItemsPerPage);
+  };
+
+  // ПАГИНАЦИЯ
+  const handlePageChange = (page: number) => {
+    todoStore.setCurrentPage(page);
+    router.push(`/page/${page}`);
+  };
+  // расчет задач для постраничного вывода
+  const paginatedTodos = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    const end = start + itemsPerPage.value;
+    return filteredTodos.value.slice(start, end);
+  });
+
+  const filteredTodos = computed(() => {
+    return todos.value.filter(todo => {
+      if (sortType.value === 'active') return !todo.completed;
+      if (sortType.value === 'completed') return todo.completed;
+      return true;
+    });
+  });
 </script>
 
 <template>
@@ -92,14 +142,14 @@
       >
         <textarea
           v-model="title"
-          className="block text-base leading-5	text-[#172b4d]	bg-white	w-full	h-auto max-h-[162px] min-h-[70px]	overflow-y-auto	p-0	border-none	shadow-none	overflow-hidden break-words	resize-none outline-none"
+          class="block text-base leading-5	text-[#172b4d]	bg-white	w-full	h-auto max-h-[162px] min-h-[70px]	overflow-y-auto	p-0	border-none	shadow-none	overflow-hidden break-words	resize-none outline-none"
           placeholder="Введите текст задачи..."
         />
       </div>
 
-      <div className="flex flex-row items-center relative">
+      <div class="flex flex-row items-center relative">
         <button
-          className="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
+          class="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
           :disabled="computedSubmitDisabled"
           title="Добавить новую задачу"
           type="submit"
@@ -108,121 +158,99 @@
         </button>
 
         <button
-          className="group leading-8 w-[25px]	h-[25px] mr-auto relative cursor-pointer"
+          class="group leading-8 w-[25px]	h-[25px] mr-auto relative cursor-pointer"
           title="Очистить текст задачи"
           type="button"
           @click="title=''"
         >
           <span
-            className="block w-full h-[3px] bg-[#6b778c] absolute top-[calc(50%-1px)] rotate-45 before:content-[''] before:block before:w-full before:h-[3px] before:bg-[#6b778c]
+            class="block w-full h-[3px] bg-[#6b778c] absolute top-[calc(50%-1px)] rotate-45 before:content-[''] before:block before:w-full before:h-[3px] before:bg-[#6b778c]
     before:absolute before:rotate-90 group-hover:bg-black group-hover:before:bg-black transition-all duration-[500ms] ease-in-out before:transition-all before:duration-[500ms]"
           />
         </button>
 
-        <!-- <BaseSelect
-          class-name="ml-[10px]"
-          initial-value="{sortByItem}"
-          options="{sortByList}"
-          on-change="{handleSortBy}"
+        <BaseSelect
+          class="ml-[10px]"
+          :initial-value="sortByItem"
+          :options="sortByList"
+          @change="handleSortBy"
         />
 
         <BaseSelect
-          class-name="ml-[10px]"
-          initial-value="{itemsPerPageList[0]}"
-          options="{itemsPerPageList}"
-          on-change="{handleItemsPerPage}"
-        /> -->
+          class="ml-[10px]"
+          :initial-value="itemsPerPageList[0]"
+          :options="itemsPerPageList"
+          @change="handleItemsPerPage"
+        />
       </div>
     </form>
 
-    <div className="flex justify-between mb-5">
+    <div class="flex justify-between mb-5">
       <button
-        className="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
+        class="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
+        :disabled="completedTodosCount === 0"
         title="Удаление завершенных задач"
         type="button"
+        @click="handleDeleteCompletedTodos"
       >
         Удалить завершенные задачи
       </button>
 
       <button
-        className="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
-        title="Удаление все задач"
+        class="bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none"
+        :disabled="todos.length === 0"
+        title="Удаление всех задач"
         type="button"
+        @click="handleDeleteAllTodos"
       >
         Удалить все задачи
       </button>
     </div>
 
-    <TodoLoader v-if="loading" />
+    <TodoLoader v-if="status === 'loading'" />
 
-    <div v-if="error">
+    <div v-if="status === 'failed'">
       {{ error }}
     </div>
 
+    <template v-if="status === 'succeeded'">
+      <div
+        v-if="filteredTodos.length > 0"
+        class="grid gap-[8px]"
+      >
+        <TodoItem
+          v-for="(todo, index) in paginatedTodos"
+          :key="todo.id"
+          :index="index"
+          :todo="todo"
+          @delete-todo="handleDeleteTodo"
+          @edit-todo="handleEditTodo"
+          @toggle-todo="handleToggleTodo"
+        />
+      </div>
+
+      <div
+        v-else
+        class="text-center"
+      >
+        У вас пока нет задач
+      </div>
+    </template>
+
     <div
-      v-if="todoStore.todos.length"
-      class="task-list"
+      v-if="totalPages > 1"
+      class=""
     >
-      <TodoItem
-        v-for="(todo, index) in todoStore.todos"
-        :key="todo.id"
-        :index="index"
-        :todo="todo"
-        @delete-todo="handleDeleteTodo"
-        @edit-todo="handleEditTodo"
-        @toggle-todo="handleToggleTodo"
-      />
+      Пагинация
     </div>
 
-    <div
-      v-else
-      class="task-empty"
-    >
-      У вас пока нет задач
-    </div>
-
-    <!-- <div
-      v-if="showPagination"
-      class="task-control"
-    >
-      <RouterLink
-        :class="{'disable': prevDisable}"
-        :to="'/page/' + (pageNumber-1)"
-        class="task-control__prev-btn task-control--btn"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-        >
-          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-          <path
-            d="M0 0h24v24H0z"
-            fill="none"
-          />
-        </svg>
-      </RouterLink>
-
-      <RouterLink
-        :class="{'disable': nextDisable}"
-        :to="'/page/'+ (pageNumber+1)"
-        class="task-control__next-btn task-control--btn"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-        >
-          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-          <path
-            d="M0 0h24v24H0z"
-            fill="none"
-          />
-        </svg>
-      </RouterLink>
-    </div> -->
+    <!-- <Pagination
+      v-if="pageCount > 1"
+      current-page="{currentPage}"
+      items-per-page="{itemsPerPage}"
+      on-page-change="{handlePageChange}"
+      total-items="{filteredTodos.length}"
+    /> -->
   </div>
 </template>
 

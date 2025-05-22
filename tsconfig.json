@@ -19,9 +19,13 @@
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
+      "@content/*": ["src/components/content/*"],
+      "@base/*": ["src/components/base/*"],
       "@views/*": ["src/views/*"],
       "@assets/*": ["src/assets/*"],
-      "@store/*": ["src/store/*"],
+      "@stores/*": ["src/stores/*"],
+      "@types/*": ["src/types/*"],
+      "@hooks/*": ["src/hooks/*"],
       "@utils/*": ["src/utils/*"]
     }
   },
@@ -30,7 +34,7 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/store/todos.ts",
+    "src/stores/todos.ts",
     "src/router/index.ts"
   ],
   "exclude": ["node_modules", "dist"],

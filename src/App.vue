@@ -1,16 +1,18 @@
 <script setup lang="ts">
+  import { useTodoStore } from '@/stores/todos';
   import { onMounted } from 'vue';
-  import { RouterView } from 'vue-router';
+  import { RouterView, useRoute, useRouter } from 'vue-router';
 
-  // const route = useRoute();
-  onMounted(()=> {
-    // route.push("/page/1");
-    // const pageNumber = +route.params;
+  const router = useRouter();
+  const route = useRoute();
+  const todoStore = useTodoStore();
 
-    // console.log(route.path); // текущий путь (/about)
-    // console.log(route.name); // имя маршрута (если задано)
-    // console.log(route.params); // параметры (/user/:id → { id: '123' })
-    // console.log(route.query);
+  onMounted(() => {
+    if (todoStore.status === 'idle') todoStore.loadTodos();
+  });
+
+  onMounted(() => {
+    if (route.path === '/') router.push("/page/1");
   });
 
 </script>

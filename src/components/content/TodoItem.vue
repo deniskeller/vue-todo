@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import useOnClickOutside from '@/hooks/useOnClickOutside';
-  import type { Todo } from '@/store/types';
-  import { computed, ref } from 'vue';
+  import type { Todo } from '@/stores/types';
+  import { computed, ref} from 'vue';
 
   const props = defineProps<{
     todo: Todo;
@@ -54,6 +54,19 @@
     isActive.value = false;
   };
 
+  // watch(
+  //   isActive,
+  //   (newValue, oldValue) => {
+  //     console.log('oldValue: ', oldValue);
+  //     console.log('newValue: ', newValue);
+  //   },
+  //   { once: true }
+  // );
+
+  // watchEffect(()=>{
+  //   console.log('isActive: ', isActive.value);
+  // });
+
 </script>
 
 <template>
@@ -71,11 +84,11 @@
     </span>
 
     <div
-      className="hidden absolute right-[15px] w-5 h-5 cursor-pointer group-hover:block group-[.active-parent]:block"
+      class="hidden absolute right-[15px] w-5 h-5 cursor-pointer group-hover:block group-[.active-parent]:block"
       @click="handleToggleMenu"
     >
       <svg
-        className="w-[24px] h-[24px] hover:fill-black group-[.active-parent]:fill-black"
+        class="w-[24px] h-[24px] hover:fill-black group-[.active-parent]:fill-black"
         fill="#ccc"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
@@ -93,20 +106,20 @@
       :class="[isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0']"
     >
       <div
-        className="bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]"
+        class="bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]"
         @click="handleToggle"
       >
         {{ todo.completed ? 'Не выполнено' : 'Выполнено' }}
       </div>
 
       <div
-        className="bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]"
+        class="bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]"
         @click="handleEdit"
       >
         Редактировать
       </div>
       <div
-        className="bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]"
+        class="bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]"
         @click="handleDelete"
       >
         Удалить

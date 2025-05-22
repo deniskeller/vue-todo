@@ -29,10 +29,13 @@ export default [
           map: [
             ['@', './src'],
             ['@components', './src/components'],
+            ['@content', './src/components/content'],
             ['@base', './src/components/base'],
             ['@views', './src/views'],
             ['@assets', './src/assets'],
-            ['@store', './src/store'],
+            ['@stores', './src/stores'],
+            ['@types', './src/types'],
+            ['@hooks', './src/hooks'],
             ['@utils', './src/utils']
           ],
           extensions: ['.js', '.jsx', '.vue', '.ts', '.tsx']
