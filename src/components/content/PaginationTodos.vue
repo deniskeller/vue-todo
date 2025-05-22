@@ -10,10 +10,10 @@
     (e: 'pageChange', page: number): void;
   }>();
 
+  const totalPages = computed(() => Math.ceil(props.totalItems / props.itemsPerPage));
   const MAX_VISIBLE_PAGES = 3;
 
-  // Вычисляемые свойства
-  const totalPages = computed(() => Math.ceil(props.totalItems / props.itemsPerPage));
+  // кнопки управления смены страниц
   const prevDisabled = computed(() => props.currentPage <= 1);
   const nextDisabled = computed(() => props.currentPage >= totalPages.value);
 
@@ -44,6 +44,7 @@
     );
   });
 
+  // изменение страниц
   const handlePageChange = (value: number) => {
     emit("pageChange", value);
   };
@@ -106,7 +107,7 @@
     <button
       v-for="number in pages"
       :key="number"
-      class="m-[0_4px]"
+      class="m-[0_4px] cursor-pointer"
       :class="{ 'text-[#61bd4f]': currentPage === number }"
       @click="handlePageChange(number)"
     >
