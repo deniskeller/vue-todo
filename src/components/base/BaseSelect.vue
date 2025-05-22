@@ -4,6 +4,7 @@
   import { ref } from 'vue';
 
   const props = defineProps<{
+    className?: string;
     initialValue: SelectItem;
     options: SelectItem[];
   }>();
@@ -35,6 +36,7 @@
   <div
     ref="selectContainerRef"
     class="relative"
+    :class="className"
   >
     <div
       class="group relative cursor-pointer flex items-center leading-none text-base font-inherit w-full h-[38px] border-b-2 border-[#6b778c] transition-all duration-[500ms] ease-in-out hover:border-black"

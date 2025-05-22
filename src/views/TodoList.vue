@@ -170,14 +170,14 @@
         </button>
 
         <BaseSelect
-          class="ml-[10px]"
+          :class-name="'ml-[10px]'"
           :initial-value="sortByItem"
           :options="sortByList"
           @change="handleSortBy"
         />
 
         <BaseSelect
-          class="ml-[10px]"
+          :class-name="'ml-[10px]'"
           :initial-value="itemsPerPageList[0]"
           :options="itemsPerPageList"
           @change="handleItemsPerPage"
