@@ -6,6 +6,7 @@
   import { storeToRefs } from 'pinia';
   import TodoLoader from '@/components/content/TodoLoader.vue';
   import TodoItem from '@/components/content/TodoItem.vue';
+  import PaginationTodos from '@/components/content/PaginationTodos.vue';
   import BaseSelect from '@/components/base/BaseSelect.vue';
   import type { SelectItem } from '@/types';
 
@@ -40,8 +41,8 @@
           createdAt: new Date().toISOString()
         });
         title.value = '';
-        const pageCount = Math.ceil((todos.value.length + 1) / itemsPerPage.value);
-        if (pageCount > 1) router.push(`/page/${pageCount}`);
+        // const pageCount = Math.ceil((todos.value.length + 1) / itemsPerPage.value);
+        if (totalPages.value > 1) router.push(`/page/${totalPages.value}`);
       } catch (error) {
         console.log('error111: ', error);
       }
@@ -237,20 +238,13 @@
       </div>
     </template>
 
-    <div
+    <PaginationTodos
       v-if="totalPages > 1"
-      class=""
-    >
-      Пагинация
-    </div>
-
-    <!-- <Pagination
-      v-if="pageCount > 1"
-      current-page="{currentPage}"
-      items-per-page="{itemsPerPage}"
-      on-page-change="{handlePageChange}"
-      total-items="{filteredTodos.length}"
-    /> -->
+      :current-page="currentPage"
+      :items-per-page="itemsPerPage"
+      :total-items="filteredTodos.length"
+      @page-change="handlePageChange"
+    />
   </div>
 </template>
 

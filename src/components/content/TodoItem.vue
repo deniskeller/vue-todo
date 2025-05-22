@@ -54,19 +54,6 @@
     isActive.value = false;
   };
 
-  // watch(
-  //   isActive,
-  //   (newValue, oldValue) => {
-  //     console.log('oldValue: ', oldValue);
-  //     console.log('newValue: ', newValue);
-  //   },
-  //   { once: true }
-  // );
-
-  // watchEffect(()=>{
-  //   console.log('isActive: ', isActive.value);
-  // });
-
 </script>
 
 <template>
