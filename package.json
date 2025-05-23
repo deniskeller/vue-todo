@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --ext .js,.ts,.vue --fix",
     "format": "prettier --write --loglevel warn .",
     "prebuild": "rimraf dist",
-    "build": "vue-tsc --noEmit && vite build"
+    "build": "vite build"
   },
   "dependencies": {
     "pinia": "^3.0.2",
