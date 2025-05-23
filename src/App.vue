@@ -1,13 +1,18 @@
 <script setup lang="ts">
   import { useTodoStore } from '@/stores/todos';
-  import { onMounted } from 'vue';
+  import { watch } from 'vue';
   import { RouterView } from 'vue-router';
   const todoStore = useTodoStore();
 
-  onMounted(() => {
-    if (todoStore.status === 'idle') todoStore.loadTodos();
-  });
-
+  watch(
+    () => todoStore.status,
+    status => {
+      if (status === 'idle') {
+        todoStore.loadTodos();
+      }
+    },
+    { immediate: true }
+  );
 </script>
 
 <template>

@@ -16,8 +16,7 @@
   const router = useRouter();
   const route = useRoute();
   const todoStore = useTodoStore();
-  const { todos, status, error, currentPage, itemsPerPage, totalPages } = storeToRefs(todoStore);
-  const sortType = ref<FilterStatus>('all');
+  const { todos, status, error, currentPage, itemsPerPage } = storeToRefs(todoStore);
 
   // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
   const title = ref<string>("");
@@ -36,8 +35,9 @@
           createdAt: new Date().toISOString()
         });
         title.value = '';
-        if (totalPages.value > 1) router.push(`/page/${totalPages.value}`);
+        if (pageCount.value > 1) router.push(`/page/${pageCount.value}`);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('error111: ', error);
       }
     } else { /* empty */ }
@@ -79,6 +79,7 @@
   };
 
   // СОРТИРОВКА СПИСКА ЗАДАЧ ПО СТАТУСУ
+  const sortType = ref<FilterStatus>('all');
   const sortByList = [
     { label: 'Все', value: 'all' },
     { label: 'Завершенные', value: 'completed' },
@@ -121,33 +122,33 @@
     return filteredTodos.value.slice(start, end);
   });
 
+  // РАСЧЕТ КОЛ-ВА СТРАНИЦ
+  const pageCount = computed(() => {
+    return Math.ceil(filteredTodos.value.length / itemsPerPage.value);
+  });
+
   watch(
     () => route.params.pageNumber,
-    newPage => {
-      if (newPage) {
-        todoStore.setCurrentPage(Number(newPage));
-      }
+    pageNumber => {
+      const page = pageNumber ? +pageNumber : 1;
+      todoStore.setCurrentPage(page);
     },
     { immediate: true }
   );
 
   watch(
-    () => filteredTodos.value.length,
+    [() => filteredTodos.value.length, () => route.params.pageNumber],
     () => {
       if (!filteredTodos.value.length) return;
-      const pageNum = Number(route.params.pageNumber);
-      if (pageNum <= 0) router.push('/page/1');
-      if (pageNum > totalPages.value) router.push('/page/' + totalPages.value);
+      const pageNumber = route.params.pageNumber ? +route.params.pageNumber : 1;
+      if (pageNumber <= 0) router.replace('/page/1');
+      if (pageNumber > pageCount.value) router.replace(`/page/${pageCount.value}`);
     }
   );
 
-  watch(
-    () => route.params.pageNumber,
-    () => {
-      console.log('route.params.pageNumber: ', route.params.pageNumber);
-    },
-    { immediate: true }
-  );
+  watch(()=>sortType.value,()=>{
+    // console.log('sortType: ', sortType);
+  });
 
 </script>
 
@@ -262,7 +263,7 @@
     </template>
 
     <PaginationTodos
-      v-if="totalPages > 1"
+      v-if="pageCount > 1"
       :current-page="currentPage"
       :items-per-page="itemsPerPage"
       :total-items="filteredTodos.length"

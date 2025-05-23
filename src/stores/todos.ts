@@ -1,10 +1,21 @@
 import type { NewTodo, Todo } from '@/stores/types';
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-// const API_URL = 'http://localhost:3001/todos';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 const API_URL = 'https://680a3fd11f1a52874cdfcbb4.mockapi.io/api/todos/todos';
 
+// Функция для обработки ошибок
+const handleFetchError = async (response: Response, message: string) => {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || message);
+  }
+  return response.json();
+};
+
 export const useTodoStore = defineStore('todos', () => {
+  const router = useRouter();
   // State
   const todos = ref<Todo[]>([]);
   const status = ref<'idle' | 'loading' | 'succeeded' | 'failed'>('idle');
@@ -12,15 +23,6 @@ export const useTodoStore = defineStore('todos', () => {
   const currentPage = ref<number>(1);
   const itemsPerPage = ref<number>(5);
   const draggedTodo = ref<Todo | null>(null);
-
-  // Функция для обработки ошибок
-  const handleFetchError = async (response: Response, message: string) => {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || message);
-    }
-    return response.json();
-  };
 
   // Фукнция для определения страницы
   const computedPage = () => {
@@ -47,18 +49,13 @@ export const useTodoStore = defineStore('todos', () => {
     throw err;
   };
 
-  // Getters
-  // const paginatedTodos = computed(() => {
-  //   const start = (currentPage.value - 1) * itemsPerPage.value;
-  //   const end = start + itemsPerPage.value;
-  //   return todos.value.slice(start, end);
+  // ---------- Getters
+  // // РАСЧЕТ КОЛ-ВА СТРАНИЦ
+  // const pageCount = computed(() => {
+  //   return Math.ceil(todos.value.length / itemsPerPage.value);
   // });
 
-  const totalPages = computed(() => {
-    return Math.ceil(todos.value.length / itemsPerPage.value);
-  });
-
-  // Actions
+  // ---------- Actions
   // ПЕРВИЧНАЯ ЗАГРУЗКА ЗАДАЧ
   const loadTodos = async () => {
     try {
@@ -295,6 +292,8 @@ export const useTodoStore = defineStore('todos', () => {
   // УСТАНОВКА ОТОБРАЖАЕМОГО КОЛ-ВА ЗАДАЧ НА СТРАНИЦЕ
   const setItemsPerPage = (count: number) => {
     itemsPerPage.value = count;
+    computedPage();
+    router.push(`/page/${currentPage.value}`);
   };
 
   // ТЕКУЩАЯ ДРАГНДРОП ЗАДАЧА
@@ -303,15 +302,13 @@ export const useTodoStore = defineStore('todos', () => {
   };
 
   return {
-    // State
     todos,
     status,
     error,
     currentPage,
     itemsPerPage,
     draggedTodo,
-    // paginatedTodos,
-    totalPages,
+    // pageCount,
     loadTodos,
     createTodo,
     updateTodo,
