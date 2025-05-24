@@ -24,8 +24,15 @@
 
   const handleSubmit = () => {
     if (!currentTodo.value) return;
-    todoStore.updateTodo({ ...currentTodo.value, title: todoTitle.value });
-    router.back();
+    try {
+      todoStore.updateTodo({
+        ...currentTodo.value,
+        title: todoTitle.value.trim()
+      });
+      router.back();
+    } catch (error) {
+      console.error('Failed to update todo:', error);
+    }
   };
   </script>
 
