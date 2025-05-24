@@ -50,10 +50,6 @@ export const useTodoStore = defineStore('todos', () => {
   };
 
   // ---------- Getters
-  // // РАСЧЕТ КОЛ-ВА СТРАНИЦ
-  // const pageCount = computed(() => {
-  //   return Math.ceil(todos.value.length / itemsPerPage.value);
-  // });
 
   // ---------- Actions
   // ПЕРВИЧНАЯ ЗАГРУЗКА ЗАДАЧ
@@ -308,7 +304,6 @@ export const useTodoStore = defineStore('todos', () => {
     currentPage,
     itemsPerPage,
     draggedTodo,
-    // pageCount,
     loadTodos,
     createTodo,
     updateTodo,

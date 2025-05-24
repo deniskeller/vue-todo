@@ -50,7 +50,7 @@
 
   // РЕДАКТИРОВАНИЕ ЗАДАЧИ
   const handleEditTodo = (id: string) => {
-    router.push('/TodoEdit/' + id);
+    router.push('/edit/' + id);
   };
 
   // УДАЛЕНИЕ ЗАДАЧИ
@@ -145,10 +145,6 @@
       if (pageNumber > pageCount.value) router.replace(`/page/${pageCount.value}`);
     }
   );
-
-  watch(()=>sortType.value,()=>{
-    // console.log('sortType: ', sortType);
-  });
 
 </script>
 
