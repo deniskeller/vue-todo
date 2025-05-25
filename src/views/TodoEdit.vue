@@ -30,8 +30,9 @@
         title: todoTitle.value.trim()
       });
       router.back();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Failed to update todo:', error);
+      // console.error('Failed to update todo:', error);
     }
   };
   </script>

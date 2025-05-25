@@ -146,6 +146,36 @@
     }
   );
 
+  // ---------- ПЕРЕТАСКИВАНИЕ ЭЛЕМЕНТОВ
+  const dragIndex = ref<number | null>(null);
+  const hoverIndex = ref<number | null>(null);
+  const handleDragStart = (index: number) => {
+    dragIndex.value = index;
+  };
+
+  const handleDragOver = (index: number) => {
+    if (dragIndex.value === null) return;
+    hoverIndex.value = index;
+    if (dragIndex.value !== index) {
+      todoStore.reorderTodos(dragIndex.value, index);
+      dragIndex.value = index;
+    }
+  };
+
+  const handleDrop = async () => {
+    if (dragIndex.value !== null && hoverIndex.value !== null && dragIndex.value === hoverIndex.value) {
+      const updatedTodos = [...todoStore.todos];
+      updatedTodos.forEach((todo, index) => {
+        if (todo.order === index + 1) {
+          todoStore.updateTodoOrder( todo.id, index + 1 );
+        }
+      });
+    }
+
+    dragIndex.value = null;
+    hoverIndex.value = null;
+  };
+
 </script>
 
 <template>
@@ -245,6 +275,9 @@
           :index="(currentPage - 1) * itemsPerPage + index"
           :todo="todo"
           @delete-todo="handleDeleteTodo"
+          @drag-over="handleDragOver"
+          @drag-start="handleDragStart"
+          @drop="handleDrop"
           @edit-todo="handleEditTodo"
           @toggle-todo="handleToggleTodo"
         />

@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import useOnClickOutside from '@/hooks/useOnClickOutside';
+  import { useTodoStore } from '@/stores/todos';
   import type { Todo } from '@/stores/types';
   import { computed, ref} from 'vue';
 
@@ -12,11 +13,13 @@
     (e: 'toggleTodo', todo: Todo): void;
     (e: 'deleteTodo', id: string): void;
     (e: 'editTodo', id: string): void;
+    (e: 'dragOver', id: number): void;
+    (e: 'dragStart', id: number): void;
+    (e: 'drop'): void;
   }>();
 
   //  ВЫЗОВ МЕНЮ ЗАДАЧИ
   const isActive = ref(false);
-  const isDragging = ref(false);
   const classObject = computed(() => ({
     '!bg-[rgba(176,203,247,0.2)] active-parent': isActive.value,
     'opacity-[0.5]': isDragging.value
@@ -54,14 +57,37 @@
     isActive.value = false;
   };
 
+  // ---------- ПЕРЕТАСКИВАНИЕ ЭЛЕМЕНТОВ
+  const todoStore = useTodoStore();
+  const isDragging = ref(false);
+  const handleDragStart = () => {
+    emit('dragStart', props.index);
+    isDragging.value = true;
+    todoStore.setDraggedTodo(props.todo);
+  };
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    emit('dragOver', props.index);
+  };
+
+  const handleDrop = () => {
+    emit('drop');
+    todoStore.setDraggedTodo(null);
+    isDragging.value = false;
+  };
+
 </script>
 
 <template>
   <div
     ref="todoRef"
-    class="group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)] opacity-[1]"
+    class="group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)]"
     :class="classObject"
-    draggable
+    draggable="true"
+    @dragover.prevent="handleDragOver"
+    @dragstart="handleDragStart"
+    @drop.prevent="handleDrop"
   >
     <span
       :class="{'line-through' : todo.completed}"
